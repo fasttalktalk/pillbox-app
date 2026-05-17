@@ -1,0 +1,17 @@
+name = "pill-box"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+# Non-secret environment variables — edit these before deploying
+[vars]
+FIREBASE_DB_BASE   = "https://pill-box-esp32-default-rtdb.asia-southeast1.firebasedatabase.app"
+GOOGLE_SCRIPT_URL  = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"
+
+# Secret variables — set via CLI (never put real values here):
+#   wrangler secret put LINE_TOKEN
+#   wrangler secret put LINE_USER
+#   wrangler secret put FIREBASE_SECRET
+#   wrangler secret put GS_SECRET

@@ -13,9 +13,15 @@ Firebase Realtime Database
     │  ซิงก์ตารางยา + รับ trigger
     ▼
 ESP32 (PillBox Hardware)
-    │  ส่ง LINE เมื่อถึงเวลา
+    │  ส่ง LINE + แจ้ง Worker เมื่อถึงเวลา
+    ▼
+Cloudflare Worker ──► Google Apps Script (log → Google Sheets)
+    │  อัปเดต Firebase + ส่ง LINE กรณีไม่กินยา
     ▼
 LINE Messaging API → ผู้ใช้
+    │  กดปุ่ม "ยืนยันกินยาแล้ว"
+    ▼
+Cloudflare Worker /ack ──► Firebase ackTrigger ──► ESP32 หยุด buzzer
 ```
 
 ## ฟีเจอร์
@@ -32,16 +38,21 @@ LINE Messaging API → ผู้ใช้
 
 ```
 pillbox-app/
-├── lib/                    # Flutter app (Dart)
+├── lib/                        # Flutter app (Dart)
 │   ├── main.dart
 │   ├── firebase_options.dart
 │   ├── login_page.dart
 │   ├── pill_page.dart
 │   └── profile_page.dart
-├── module/                 # ESP32 firmware (Arduino C++)
+├── module/                     # ESP32 firmware (Arduino C++)
 │   ├── module.ino
-│   ├── secrets.h.example   # template — copy เป็น secrets.h
-│   └── secrets.h           # ไม่ commit (gitignored)
+│   ├── secrets.h.example       # template — copy เป็น secrets.h
+│   └── secrets.h               # ไม่ commit (gitignored)
+├── cloudflare/                 # Cloudflare Worker
+│   ├── worker.js
+│   └── wrangler.toml
+├── google-apps-script/         # Google Apps Script (log → Sheets)
+│   └── Code.gs
 ├── android/
 ├── ios/
 └── pubspec.yaml
@@ -77,7 +88,31 @@ pillbox-app/
 
 1. สร้าง channel ใน [LINE Developers](https://developers.line.biz/)
 2. ออก Channel Access Token
-3. ใส่ใน `module/secrets.h`
+3. ใส่ใน `module/secrets.h` และ Cloudflare secrets (ดูด้านล่าง)
+
+### Cloudflare Worker
+
+1. ติดตั้ง [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
+2. `cd cloudflare`
+3. แก้ `wrangler.toml` — ใส่ค่า `FIREBASE_DB_BASE` และ `GOOGLE_SCRIPT_URL`
+4. ตั้ง secrets ผ่าน CLI:
+   ```bash
+   wrangler secret put LINE_TOKEN
+   wrangler secret put LINE_USER
+   wrangler secret put FIREBASE_SECRET
+   wrangler secret put GS_SECRET
+   ```
+5. Deploy: `wrangler deploy`
+
+Worker จะรัน cron ทุก 5 นาทีเพื่อเช็ค missed dose และส่ง LINE เตือน
+
+### Google Apps Script
+
+1. เปิด [script.google.com](https://script.google.com) สร้าง project ใหม่
+2. วางโค้ดจาก `google-apps-script/Code.gs`
+3. เปลี่ยน `SECRET` ให้ตรงกับ `GS_SECRET` ที่ตั้งใน Cloudflare
+4. Deploy → New deployment → Web app → Execute as: **Me**, Who can access: **Anyone**
+5. Copy URL ไปใส่ใน `GOOGLE_SCRIPT_URL` ของ `wrangler.toml`
 
 ## Hardware
 
