@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "102989679464",
+    "firebase_url": "https://pill-box-esp32-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "pill-box-esp32",
+    "storage_bucket": "pill-box-esp32.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102989679464:android:a22aa0946f6c07101ca4dd",
+        "android_client_info": {
+          "package_name": "com.example.project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnKjOA8seWXLe3x8Nl9bnWg_qMMqGNbvc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
