@@ -48,6 +48,10 @@ app.*.map.json
 module/secrets.h
 moduleino.text
 appscrpt.js
+lib/firebase_options.dart
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+android/app/google-services.json
 
 # Claude Code local settings
 .claude/
